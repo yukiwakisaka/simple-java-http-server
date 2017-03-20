@@ -29,28 +29,40 @@ public class SimpleHttpServer {
             OutputStream out = sock.getOutputStream();
             OutputStreamWriter streamWriter = new OutputStreamWriter(out);
             BufferedWriter writer = new BufferedWriter(streamWriter);
-            StringBuilder sb = new StringBuilder();
+            StringBuilder reqSb = new StringBuilder();
 
-            /* HeaderをOutput(Response)に書き込む */
-            sb.append("HTTP/1.1 200 Success\n");
-            sb.append("Content-Type: text/html; charset=UTF-8\n");
-            LocalDateTime ct = LocalDateTime.now();
-            sb.append("Date: ");
-            sb.append(ct.toString());
-            sb.append("\n\n");
-
-            /* Input(Request)を読み込み、そのままOutput(Response)に書き込む */
+            /* Input(Request)を読み込む */
             while (true) {
                 String line = reader.readLine();
                 if (line.isEmpty()) {
                     break;
                 }
-                sb.append(line);
-                sb.append("\n");
+                reqSb.append(line);
+                reqSb.append("\n");
             }
-            String req = sb.toString();
-            logger.info(req);
-            writer.write(req);
+            logger.info(reqSb.toString());
+
+            StringBuilder resSb = new StringBuilder();
+            /* HeaderをOutput(Response)に書き込む */
+            resSb.append("HTTP/1.1 200 Success\n");
+            resSb.append("Content-Type: text/html; charset=UTF-8\n");
+            LocalDateTime ct = LocalDateTime.now();
+            resSb.append("Date: ");
+            resSb.append(ct.toString());
+            resSb.append("\n\n");
+
+            /* Body(HTML)をOutput(Response)に書き込む */
+            resSb.append("<html>");
+            resSb.append("<head>");
+            resSb.append("<title>これはtitleです</title>");
+            resSb.append("</head>");
+            resSb.append("<body>");
+            resSb.append("<h1>これはヘッダです</h1>");
+            resSb.append("<p>これはパラグラフです</p>");
+            resSb.append("</body>");
+            resSb.append("</html>");
+
+            writer.write(resSb.toString());
 
             /* Writer, Socket, Readerの順にcloseする */
             writer.close();
