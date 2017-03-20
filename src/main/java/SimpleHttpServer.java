@@ -8,17 +8,17 @@ import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
 public class SimpleHttpServer {
+
+    private static final int PORT = 8000;
+    private static final String HTML_DIR = "src/main/resources/html/";
+
     public static void main(String[] args) {
 
         Logger logger = Logger.getLogger("main");
 
-        final int PORT = 8000;
-
         try {
-            final InetAddress HOST = InetAddress.getLocalHost();
-            ServerSocket socket = new ServerSocket(PORT, 10, HOST);
+            ServerSocket socket = new ServerSocket(PORT);
             logger.info("serving HTTP on " + socket.getInetAddress() + ":" + socket.getLocalPort() + " ...");
-
             Socket sock = socket.accept();
 
             /* Reader, Writerを取得 */
@@ -43,6 +43,7 @@ public class SimpleHttpServer {
             logger.info(reqSb.toString());
 
             StringBuilder resSb = new StringBuilder();
+
             /* HeaderをOutput(Response)に書き込む */
             resSb.append("HTTP/1.1 200 Success\n");
             resSb.append("Content-Type: text/html; charset=UTF-8\n");
@@ -51,16 +52,27 @@ public class SimpleHttpServer {
             resSb.append(ct.toString());
             resSb.append("\n\n");
 
-            /* Body(HTML)をOutput(Response)に書き込む */
-            resSb.append("<html>");
-            resSb.append("<head>");
-            resSb.append("<title>これはtitleです</title>");
-            resSb.append("</head>");
-            resSb.append("<body>");
-            resSb.append("<h1>これはヘッダです</h1>");
-            resSb.append("<p>これはパラグラフです</p>");
-            resSb.append("</body>");
-            resSb.append("</html>");
+            /* Body(HTML)を読み込み、Output(Response)に書き込む */
+            try {
+                File htmlFile = getHtmlFile("sample.html");
+                logger.info(htmlFile.toString());
+                FileReader fileReader = new FileReader(htmlFile);
+                BufferedReader fileBufferedReader = new BufferedReader(fileReader);
+                while (true) {
+                    String line = fileBufferedReader.readLine();
+                    if (line == null) {
+                        break;
+                    }
+                    logger.info(line);
+                    resSb.append(line);
+                    resSb.append("\n");
+                }
+                fileBufferedReader.close();
+                fileReader.close();
+            } catch (IOException e) {
+                logger.warning(e.toString());
+                resSb.append("File Not Found");
+            }
 
             writer.write(resSb.toString());
 
@@ -77,5 +89,9 @@ public class SimpleHttpServer {
         } catch (IOException e) {
             logger.warning(e.toString());
         }
+    }
+
+    private static File getHtmlFile(String path) {
+        return new File(HTML_DIR + path);
     }
 }
