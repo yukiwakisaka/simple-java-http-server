@@ -20,7 +20,12 @@ public class SimpleHttpServer {
             ServerSocket socket = new ServerSocket(PORT, 10, HOST);
             logger.info("serving HTTP on " + socket.getInetAddress() + ":" + socket.getLocalPort() + " ...");
 
-            socket.accept();
+            Socket sock = socket.accept();
+            OutputStream out = sock.getOutputStream();
+            out.write("Hello Client!\n".getBytes());
+            out.close();
+            sock.close();
+
             logger.info("Hello Request!");
         } catch (IOException e) {
             logger.warning(e.toString());
