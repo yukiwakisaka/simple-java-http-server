@@ -2,10 +2,9 @@
  * Created by yuki.wakisaka on 2017/03/20.
  */
 
-// https://docs.oracle.com/javase/jp/8/docs/api/
-
 import java.io.*;
 import java.net.*;
+import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
 public class SimpleHttpServer {
@@ -30,9 +29,17 @@ public class SimpleHttpServer {
             OutputStream out = sock.getOutputStream();
             OutputStreamWriter streamWriter = new OutputStreamWriter(out);
             BufferedWriter writer = new BufferedWriter(streamWriter);
+            StringBuilder sb = new StringBuilder();
+
+            /* HeaderをOutput(Response)に書き込む */
+            sb.append("HTTP/1.1 200 Success\n");
+            sb.append("Content-Type: text/html; charset=UTF-8\n");
+            LocalDateTime ct = LocalDateTime.now();
+            sb.append("Date: ");
+            sb.append(ct.toString());
+            sb.append("\n\n");
 
             /* Input(Request)を読み込み、そのままOutput(Response)に書き込む */
-            StringBuilder sb = new StringBuilder();
             while (true) {
                 String line = reader.readLine();
                 if (line.isEmpty()) {
