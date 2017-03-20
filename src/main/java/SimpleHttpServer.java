@@ -5,6 +5,7 @@
 import java.io.*;
 import java.net.*;
 import java.time.LocalDateTime;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class SimpleHttpServer {
@@ -29,18 +30,26 @@ public class SimpleHttpServer {
             OutputStream out = sock.getOutputStream();
             OutputStreamWriter streamWriter = new OutputStreamWriter(out);
             BufferedWriter writer = new BufferedWriter(streamWriter);
-            StringBuilder reqSb = new StringBuilder();
 
             /* Input(Request)を読み込む */
+            List<String> reqArr = new ArrayList();
             while (true) {
                 String line = reader.readLine();
                 if (line.isEmpty()) {
                     break;
                 }
-                reqSb.append(line);
-                reqSb.append("\n");
+                reqArr.add(line);
             }
-            logger.info(reqSb.toString());
+            logger.info(reqArr.toString());
+
+            String[] firstLine = reqArr.get(0).split(" ");
+            String method = firstLine[0];
+            String url = firstLine[1];
+            logger.info("Request : " + method + " : " + url);
+            String htmlName = (url.equals("/") || url.equals("/index")) ? "index.html"
+                    : (url.equals("/hello")) ? "hello.html"
+                    : (url.equals("/sample")) ? "sample.html"
+                    : "404.html";
 
             StringBuilder resSb = new StringBuilder();
 
@@ -54,7 +63,7 @@ public class SimpleHttpServer {
 
             /* Body(HTML)を読み込み、Output(Response)に書き込む */
             try {
-                File htmlFile = getHtmlFile("sample.html");
+                File htmlFile = getHtmlFile(htmlName);
                 logger.info(htmlFile.toString());
                 FileReader fileReader = new FileReader(htmlFile);
                 BufferedReader fileBufferedReader = new BufferedReader(fileReader);
