@@ -21,12 +21,40 @@ public class SimpleHttpServer {
             logger.info("serving HTTP on " + socket.getInetAddress() + ":" + socket.getLocalPort() + " ...");
 
             Socket sock = socket.accept();
+
+            /* Reader, Writerを取得 */
+            InputStream in = sock.getInputStream();
+            InputStreamReader streamReader = new InputStreamReader(in);
+            BufferedReader reader = new BufferedReader(streamReader);
+
             OutputStream out = sock.getOutputStream();
-            out.write("Hello Client!\n".getBytes());
+            OutputStreamWriter streamWriter = new OutputStreamWriter(out);
+            BufferedWriter writer = new BufferedWriter(streamWriter);
+
+            /* Input(Request)を読み込み、そのままOutput(Response)に書き込む */
+            StringBuilder sb = new StringBuilder();
+            while (true) {
+                String line = reader.readLine();
+                if (line.isEmpty()) {
+                    break;
+                }
+                sb.append(line);
+                sb.append("\n");
+            }
+            String req = sb.toString();
+            logger.info(req);
+            writer.write(req);
+
+            /* Writer, Socket, Readerの順にcloseする */
+            writer.close();
+            streamWriter.close();
             out.close();
+
             sock.close();
 
-            logger.info("Hello Request!");
+            reader.close();
+            streamReader.close();
+            in.close();
         } catch (IOException e) {
             logger.warning(e.toString());
         }
