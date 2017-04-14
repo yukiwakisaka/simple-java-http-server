@@ -25,26 +25,6 @@ public class RequestHandler {
         try {
             switch (request.method) {
                 case GET:
-                    //TODO なぜかこれがうまくいかない（nioならでけたけど、一旦記録として残してます）
-                    //File file = getFile(request.file);
-                    //logger.info(file.getName());
-                    //
-                    //ArrayList<Byte> ba = new ArrayList<Byte>();
-                    //FileReader fileReader = new FileReader(file);
-                    //
-                    //int c = fileReader.read();
-                    //while (c != -1) {
-                    //    ba.add((byte) c);
-                    //    c = fileReader.read();
-                    //}
-                    //fileReader.close();
-                    //logger.info(Integer.toString(ba.size()));
-                    //logger.info(ba.toString());
-                    //
-                    //byte[] body = new byte[ba.size()];
-                    //for (int i = 0; i < ba.size(); i++) {
-                    //    body[i] = ba.get(i);
-                    //}
                     byte[] body = Files.readAllBytes(Paths.get(this.DOC_ROOT + request.file));
 
                     // TODO MIMEをいい感じに取得するメソッド的なものが欲しいよね

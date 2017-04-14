@@ -1,7 +1,6 @@
 import enums.Status;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -50,13 +49,5 @@ public class Response {
         System.arraycopy(this.body, 0, res, head.length, this.body.length);
 
         return res;
-    }
-
-    public void setBody(byte[] body) {
-        this.body = body;
-    }
-
-    public void setHeader(Map<String, String> header) {
-        this.header = header;
     }
 }
